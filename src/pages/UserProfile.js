@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { auth, firestore } from "../database/firebase";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  query,
-  where,
-  getDocs,
-  collection,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc, query, where, getDocs, collection } from "firebase/firestore";
+import { reauthenticateWithCredential, updatePassword, EmailAuthProvider } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
+
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (auth.currentUser) {
         try {
-          // Fetch user data from Firestore based on email
           const email = auth.currentUser.email;
           const userQuery = query(
             collection(firestore, "users"),
@@ -31,7 +31,7 @@ const UserProfile = () => {
           const userSnapshot = await getDocs(userQuery);
 
           if (!userSnapshot.empty) {
-            const userDoc = userSnapshot.docs[0]; // Assuming email is unique
+            const userDoc = userSnapshot.docs[0];
             setUserData(userDoc.data());
             setFormData(userDoc.data());
           } else {
@@ -76,22 +76,34 @@ const UserProfile = () => {
     }
   };
 
-  const handlePasswordChange = async () => {
-    try {
-      await auth.currentUser.updatePassword(newPassword);
-      alert("Password updated successfully");
-    } catch (error) {
-      console.error("Error updating password:", error);
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (user) {
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      try {
+        await reauthenticateWithCredential(user, credential);
+        if (newPassword === confirmPassword) {
+          await updatePassword(user, newPassword);
+          toast.success("Password updated successfully!");
+          auth.signOut().then(() => navigate("/LoginPage"));
+        } else {
+          setError("Passwords do not match.");
+        }
+      } catch (error) {
+        toast.error("Error updating password.");
+      }
     }
   };
 
   if (!userData) return <div>Loading...</div>;
 
   return (
-    <div>
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-3xl font-semibold mb-6">User Profile</h1>
-        <div className="bg-white shadow-lg rounded-lg p-6">
+    <div className="p-6">
+      <h1 className="text-3xl font-semibold mb-6">User Profile</h1>
+      <div className="flex gap-6">
+        {/* User Details Form */}
+        <div className="bg-white shadow-lg rounded-lg p-6 flex-1">
           <div className="flex items-center mb-6">
             <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-2xl font-bold text-white">
               {userData.firstname[0]}
@@ -194,23 +206,54 @@ const UserProfile = () => {
             </div>
           )}
         </div>
-      </div>
 
-      <div className="bg-white shadow-lg rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Change Password</h2>
-        <input
-          type="password"
-          placeholder="New Password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          className="mb-4 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-        />
-        <button
-          onClick={handlePasswordChange}
-          className="py-2 px-4 bg-green-500 text-white rounded-md shadow-sm"
-        >
-          Change Password
-        </button>
+        {/* Password Change Form */}
+        <div className="bg-white shadow-lg rounded-lg p-6 flex-1">
+          <form onSubmit={handlePasswordChange}>
+            <h2 className="text-2xl font-semibold mb-4">Change Password</h2>
+            <div className="mb-4 relative">
+              <label className="block text-sm">Current Password</label>
+              <input
+                type={passwordVisible ? "text" : "password"}
+                placeholder="Current Password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="border p-2 rounded w-full"
+              />
+              <button
+                type="button"
+                onClick={() => setPasswordVisible(!passwordVisible)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
+                {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm">New Password</label>
+              <input
+                type={passwordVisible ? "text" : "password"}
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="border p-2 rounded w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm">Confirm Password</label>
+              <input
+                type={passwordVisible ? "text" : "password"}
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="border p-2 rounded w-full"
+              />
+            </div>
+            {error && <p className="text-red-500 mb-2">{error}</p>}
+            <button type="submit" className="p-2 bg-blue-500 text-white rounded">
+              Change Password
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
