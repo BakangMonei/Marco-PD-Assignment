@@ -85,7 +85,8 @@ const UserProfile = () => {
         await reauthenticateWithCredential(user, credential);
         if (newPassword === confirmPassword) {
           await updatePassword(user, newPassword);
-          toast.success("Password updated successfully!");
+        //   toast.success("Password updated successfully!");
+        alert("Password updated successfully!");
           auth.signOut().then(() => navigate("/LoginPage"));
         } else {
           setError("Passwords do not match.");
