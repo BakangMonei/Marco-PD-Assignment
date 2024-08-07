@@ -87,7 +87,7 @@ const UserProfile = () => {
           await updatePassword(user, newPassword);
         //   toast.success("Password updated successfully!");
         alert("Password updated successfully!");
-          auth.signOut().then(() => navigate("/LoginPage"));
+          auth.signOut().then(() => navigate("/"));
         } else {
           setError("Passwords do not match.");
         }

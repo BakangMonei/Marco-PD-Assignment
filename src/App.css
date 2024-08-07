@@ -274,3 +274,54 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* src/components/UserDashboard.css */
+
+.dashboard-container {
+  padding: 20px;
+  background-color: #f8f9fa; /* Light background color */
+}
+
+.carousel-slide {
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+  transition: opacity 0.3s ease;
+}
+
+.card:hover img {
+  opacity: 0.9;
+}
+
+.slick-dots {
+  bottom: -30px; /* Position dots at the bottom */
+}
+
+.slick-dots li button:before {
+  color: #007bff; /* Dot color */
+}
+
+.slick-dots li.slick-active button:before {
+  color: #0056b3; /* Active dot color */
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}

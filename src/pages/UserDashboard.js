@@ -1,12 +1,48 @@
-// src/components/UserDashboard.js
-import React from "react";
-import { sportsData } from "../database/data";
-import SideBar from "../components/sidebar/SideBar";
+import React from 'react';
+import sportsData  from '../database/data';
+import SideBar from '../components/sidebar/SideBar';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai'; // Icons for "Add to Fav"
 
 const UserDashboard = () => {
+  const handleFavClick = (id) => {
+    // Logic to handle "Add to Fav" click
+    console.log(`Sport with id ${id} added to favorites`);
+  };
+
   return (
     <>
-    <h1>Landing Page</h1>
+      <SideBar />
+      <div className="p-4">
+        <h1 className="text-3xl font-bold mb-4">Landing Page</h1>
+        <Carousel
+          showThumbs={false}
+          showStatus={false}
+          infiniteLoop
+          autoPlay
+          interval={3000}
+          className="carousel-container"
+        >
+          {sportsData.map((sport) => (
+            <div key={sport.id} className="relative">
+              <img src={sport.imageUrl} alt={sport.name} className="w-full h-64 object-cover rounded-lg" />
+              <div className="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold">{sport.name}</h2>
+                <p>{sport.venue}</p>
+                <p>{sport.time}</p>
+                <p>{sport.description}</p>
+                <button
+                  onClick={() => handleFavClick(sport.id)}
+                  className="absolute top-4 right-4 text-red-500"
+                >
+                  <AiOutlineHeart size={24} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </Carousel>
+      </div>
     </>
   );
 };

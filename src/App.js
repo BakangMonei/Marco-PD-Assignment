@@ -11,6 +11,8 @@ import rootReducer from "./redux/reducers"; // Import your root reducer
 import "./App.css";
 import { auth } from "./database/firebase";
 import MainIndex from "./pages/MainIndex";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const RegistrationPage = lazy(() => import("./layouts/RegistrationPage"));
 const ForgotPassword = lazy(() => import("./layouts/ForgotPassword"));
