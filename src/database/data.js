@@ -20,7 +20,7 @@ const sportsData = {
   ],
   Soccer: [
     {
-      id: 1,
+      id: 3,
       imageUrl: 'https://images.pexels.com/photos/16384666/pexels-photo-16384666.jpeg?auto=compress&cs=tinysrgb&h=226.525&fit=crop&w=253.17499999999998&dpr=1',
       name: 'Soccer Game 1',
       venue: 'Field A',
@@ -28,7 +28,7 @@ const sportsData = {
       description: 'A competitive soccer game with top teams.'
     },
     {
-      id: 2,
+      id: 4,
       imageUrl: 'https://images.pexels.com/photos/978695/pexels-photo-978695.jpeg?auto=compress&cs=tinysrgb&w=600',
       name: 'Soccer Game 2',
       venue: 'Field B',
@@ -39,7 +39,7 @@ const sportsData = {
   ],
   Chess: [
     {
-      id: 1,
+      id: 5,
       imageUrl: 'https://media.istockphoto.com/id/1370874998/photo/chess-pieces-checkmate-gold-king-winner-surrounded-with-silver-chess-pieces-on-chess-board.jpg?b=1&s=612x612&w=0&k=20&c=EM3fUo11XQjTUHq0V5vWHdLiVVZf6GSOefg5wvnsN74=',
       name: 'Soccer Game 1',
       venue: 'Field A',
@@ -47,7 +47,7 @@ const sportsData = {
       description: 'A competitive soccer game with top teams.'
     },
     {
-      id: 2,
+      id: 6,
       imageUrl: 'https://images.pexels.com/photos/6140940/pexels-photo-6140940.jpeg?auto=compress&cs=tinysrgb&w=600',
       name: 'Soccer Game 2',
       venue: 'Field B',
@@ -58,7 +58,7 @@ const sportsData = {
   ],
   Rugby: [
     {
-      id: 1,
+      id: 7,
       imageUrl: 'https://images.pexels.com/photos/163398/football-american-football-canadian-university-canadian-football-163398.jpeg?auto=compress&cs=tinysrgb&w=600',
       name: 'Soccer Game 1',
       venue: 'Field A',
@@ -66,7 +66,7 @@ const sportsData = {
       description: 'A competitive soccer game with top teams.'
     },
     {
-      id: 2,
+      id: 8,
       imageUrl: 'https://images.pexels.com/photos/128457/pexels-photo-128457.jpeg?auto=compress&cs=tinysrgb&w=600',
       name: 'Soccer Game 2',
       venue: 'Field B',

@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { doc, setDoc, getDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { auth, firestore } from '../database/firebase';
 import sportsData  from '../database/data';
 import SideBar from '../components/sidebar/SideBar';
 import { Carousel } from 'react-responsive-carousel';
@@ -6,9 +8,46 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai'; // Icons for "Add to Fav"
 
 const UserDashboard = () => {
-  const handleFavClick = (id) => {
-    // Logic to handle "Add to Fav" click
-    console.log(`Sport with id ${id} added to favorites`);
+  const [favorites, setFavorites] = useState([]);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Fetch current user
+    const unsubscribe = auth.onAuthStateChanged(setUser);
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      // Fetch favorite sports for the current user
+      const fetchFavorites = async () => {
+        const docRef = doc(firestore, 'users', user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setFavorites(docSnap.data().favorites || []);
+        }
+      };
+      fetchFavorites();
+    }
+  }, [user]);
+
+  const handleFavClick = async (id) => {
+    if (user) {
+      const docRef = doc(firestore, 'users', user.uid);
+      const isFavorite = favorites.includes(id);
+
+      if (isFavorite) {
+        // Remove from favorites
+        await setDoc(docRef, { favorites: arrayRemove(id) }, { merge: true });
+        setFavorites(favorites.filter(fav => fav !== id));
+      } else {
+        // Add to favorites
+        await setDoc(docRef, { favorites: arrayUnion(id) }, { merge: true });
+        setFavorites([...favorites, id]);
+      }
+    } else {
+      console.log('User is not logged in');
+    }
   };
 
   return (
@@ -37,9 +76,13 @@ const UserDashboard = () => {
                     <p>{sport.description}</p>
                     <button
                       onClick={() => handleFavClick(sport.id)}
-                      className="absolute top-4 right-4 text-red-500"
+                      className="absolute top-4 right-4"
                     >
-                      <AiOutlineHeart size={24} />
+                      {favorites.includes(sport.id) ? (
+                        <AiFillHeart size={24} className="text-red-500" />
+                      ) : (
+                        <AiOutlineHeart size={24} className="text-red-500" />
+                      )}
                     </button>
                   </div>
                 </div>
