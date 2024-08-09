@@ -12,6 +12,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import { auth } from "../database/firebase";
 import Check from "../components/checkbox/check";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import Trefoill from "../components/loaders/Trefoil";
 
 export const LoginPage = ({ showPasswordToggle, showPassword }) => {
@@ -25,10 +28,14 @@ export const LoginPage = ({ showPasswordToggle, showPassword }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginClicked(true);
+    
     if (!email || !password) {
+      toast.error("Email and password are required.");
       setError("Email and password are required.");
+      setLoginClicked(false); // Reset the login button state
       return;
     }
+    
     try {
       const userSnapshot = await getDocs(
         query(collection(db, "users"), where("email", "==", email))
@@ -39,25 +46,31 @@ export const LoginPage = ({ showPasswordToggle, showPassword }) => {
       const s_adminSnapshot = await getDocs(
         query(collection(db, "s_admin"), where("email", "==", email))
       );
-
+  
       if (userSnapshot.size > 0) {
         await signInWithEmailAndPassword(auth, email, password);
+        toast.success("Successfully logged in as User.");
         navigate("/MainIndex");
       } else if (adminSnapshot.size > 0) {
         await signInWithEmailAndPassword(auth, email, password);
+        toast.success("Successfully logged in as Admin.");
         navigate("/AdminDashboard");
       } else if (s_adminSnapshot.size > 0) {
         await signInWithEmailAndPassword(auth, email, password);
+        toast.success("Successfully logged in as Super Admin.");
         navigate("/SuperAdminDashboard");
-        console.log("Successfully Logged in As Super Admin " + email);
       } else {
+        toast.error("Invalid email or password.");
         setError("Invalid email or password.");
       }
     } catch (error) {
-      setError(error.message);
+      toast.error("Login error: " + error.message);
       console.error("Login error:", error);
+    } finally {
+      setLoginClicked(false); // Reset the login button state
     }
   };
+  
 
   return (
     <div className="bg_image flex items-center justify-center min-h-screen ">
@@ -99,7 +112,7 @@ export const LoginPage = ({ showPasswordToggle, showPassword }) => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-
+  
           <div className="flex flex-row mb-4 mt-1 text-end">
             <div className="">
               <Check />
@@ -126,9 +139,11 @@ export const LoginPage = ({ showPasswordToggle, showPassword }) => {
             </a>
           </h1>
         </form>
+        <ToastContainer />
       </div>
     </div>
   );
+  
 };
 const mapStateToProps = (state) => ({
   showPasswordToggle: state.password.showPassword,
